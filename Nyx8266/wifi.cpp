@@ -286,7 +286,16 @@ namespace wifi {
     }
     void startEvilTwin(String apn){
         WiFi.softAPConfig(ip, ip, netmask);
-        WiFi.softAP(apn);
+        WiFi.setOutputPower(20.5);
+        WiFi.softAP(apn.c_str());
+        /* stopAP() tears down all sockets before we get here.
+           Without restarting DNS (port 53) and the HTTP server (port 80)
+           on the new AP interface:
+             - Captive-portal redirect never fires (DNS is dead).
+             - No HTTP connections are accepted (TCP socket is gone).
+             - mode stays "st", so the rest of the firmware thinks the AP is down.
+           Calling startWebServer() fixes all three. */
+        startWebServer();
     }
     /*
         void startAP(String path) {
@@ -374,12 +383,19 @@ namespace wifi {
         }
     }
     void removeAll(){
+        /* LittleFS.end() unmounts cleanly before format — on some SDK builds
+           calling format() while mounted returns false. */
+        LittleFS.end();
         if (LittleFS.format()){
-            server.send(200,W_OK, W_OK);
+            /* W_OK == " OK" (leading space) — JS checks res === "OK" so use
+               the literal string to guarantee the match. */
+            server.send(200, "text/plain", "OK");
+            server.client().flush();
             delay(500);
             ESP.reset();
-        }else{
-            server.send(200,W_OK, "FAILED");
+        } else {
+            LittleFS.begin();
+            server.send(200, "text/plain", "FAILED");
         }
     }
 
