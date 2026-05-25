@@ -122,6 +122,13 @@ function load() {
   });
 }
 
+/* Fetch attack state immediately on page load — don't wait for the lang file.
+   parseLang() will call load() a second time once lang is ready, which is fine:
+   the queue serialises the requests and the second draw() just adds translated
+   button text. Without this early call the buttons flash "START" for 2-4 s
+   while the lang→attack.json chain completes, even when attacks are running. */
+window.addEventListener("load", function () { load(); });
+
 window.addEventListener("pagehide", function () {
   if (autoRefresh) { clearInterval(autoRefresh); autoRefresh = null; }
 });
