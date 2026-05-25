@@ -1,0 +1,44 @@
+<!DOCTYPE html><html><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=theme-color content=#0d1117><title>Nyx8266</title><link rel=stylesheet href=style.css><script src=js/site.js></script><script src=js/scan.js></script></head><body onload=loadLang()>
+<nav><ul class=menu>
+<li><a href=scan.html class=active data-translate=scan>Scan</a></li>
+<li><a href=ssids.html data-translate=ssids>SSIDs</a></li>
+<li><a href=attack.html data-translate=attacks>Attack</a></li>
+<li><a href=fsmanager.html>FS</a></li>
+<li><a href=settings.html data-translate=settings>Settings</a></li>
+</ul></nav>
+<div id=status>●</div>
+<div class=container>
+<h1 data-translate=scan>Scan</h1>
+<div class="card row">
+<button id=scanZero onclick="scan(0)" data-translate=scan_aps>⊕ Scan APs</button>
+<button id=scanOne onclick="scan(1)" data-translate=scan_stations>⊕ Scan Stations</button>
+<label for=ch style="color:var(--muted);font-size:.82rem">Ch:</label>
+<select id=ch name=ch style=width:5rem><option value=all>All</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option></select>
+<input type=number value=15 id=scanTime style="width:4rem;min-width:4rem">s
+<button id=RButton onclick=load() class=right data-translate=reload>↺ Reload</button>
+</div>
+<h2>Access Points <span id=apNum class=pkt-badge>0</span></h2>
+<div class=card><div class=table-wrap>
+<table id=apTable><tr><th></th><th>SSID</th><th class=hide-sm>Ch</th><th>Signal</th><th class=hide-sm>Enc</th><th class=hide-sm>MAC</th><th></th><th></th></tr></table>
+</div><div class=flex style="margin-top:.5rem">
+<button onclick="selectAll(0,true)" data-translate=select_all>✓ All</button>
+<button onclick="selectAll(0,false)" data-translate=deselect_all>✗ None</button>
+</div></div>
+<h2>Stations <span id=stNum class=pkt-badge>0</span></h2>
+<div class=card><div class=table-wrap>
+<table id=stTable><tr><th></th><th class=hide-sm>Vendor</th><th>MAC</th><th class=hide-sm>Ch</th><th class=hide-sm>Pkts</th><th>AP</th><th></th><th></th></tr></table>
+</div><div class=flex style="margin-top:.5rem">
+<button onclick="selectAll(1,true)" data-translate=select_all>✓ All</button>
+<button onclick="selectAll(1,false)" data-translate=deselect_all>✗ None</button>
+</div></div>
+<h2 data-translate=devices>Saved Devices <span id=nNum class=pkt-badge>0</span></h2>
+<div class=card><div class=table-wrap>
+<table id=nTable><tr><th></th><th>MAC</th><th class=hide-sm>Vendor</th><th>Name</th><th class=hide-sm>Ch</th><th></th><th></th><th></th></tr></table>
+</div><div class=flex style="margin-top:.5rem">
+<button onclick="selectAll(2,true)" data-translate=select_all>✓ All</button>
+<button onclick="selectAll(2,false)" data-translate=deselect_all>✗ None</button>
+<button onclick="add(2)" class=primary data-translate=new>+ New</button>
+</div></div>
+</div>
+<footer>Nyx8266 · <a href=info.html>Credits</a></footer>
+</body></html>

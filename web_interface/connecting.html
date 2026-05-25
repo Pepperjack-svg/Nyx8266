@@ -1,0 +1,21 @@
+<!DOCTYPE html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=theme-color content=#0d1117><title>Connecting…</title><link rel=stylesheet href=style.css><script src=js/site.js></script></head><body style="display:grid;place-items:center;height:100vh;padding:1rem">
+<div style="width:100%;max-width:340px">
+  <div class=card style="text-align:center;padding:2rem 1.5rem">
+    <div style="font-size:2rem;margin-bottom:1rem">📡</div>
+    <h2 style="color:var(--accent);margin-bottom:.5rem">Connecting…</h2>
+    <p style="margin-bottom:1.5rem">Attempting to join the network. Please wait.</p>
+    <div class=progress><div class=progress-fill style="animation-duration:10s"></div></div>
+    <p id=wstatus style="margin-top:1rem;font-size:.75rem;color:var(--muted)">Checking status…</p>
+  </div>
+  <p class=center style="font-size:.72rem;margin-top:1rem"><a href=/>← Back to Nyx8266</a></p>
+</div>
+<script>
+setTimeout(function(){
+  getFile("wifistatus.txt",function(r){
+    var el=document.getElementById("wstatus");
+    if(r&&r.indexOf("Connected")===0){el.style.color="var(--success)";el.textContent="✓ "+r;}
+    else{el.style.color="var(--danger)";el.textContent="✗ "+r;}
+  });
+},10000);
+</script>
+</body></html>

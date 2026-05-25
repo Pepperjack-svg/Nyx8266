@@ -1,0 +1,58 @@
+<!DOCTYPE html><html><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=theme-color content=#0d1117><title>Nyx8266</title><link rel=stylesheet href=style.css><script src=js/site.js></script><script src=js/attack.js></script></head><body onload=loadLang()>
+<nav><ul class=menu>
+<li><a href=scan.html data-translate=scan>Scan</a></li>
+<li><a href=ssids.html data-translate=ssids>SSIDs</a></li>
+<li><a href=attack.html class=active data-translate=attacks>Attack</a></li>
+<li><a href=fsmanager.html>FS</a></li>
+<li><a href=settings.html data-translate=settings>Settings</a></li>
+</ul></nav>
+<div id=status>●</div>
+<div class=container>
+<h1 data-translate=attacks>Attacks</h1>
+<div class=row style="margin-bottom:.75rem">
+<span style="color:var(--muted);font-size:.8rem">All Pkts/s: <span id=allpkts class=pkt-badge>0</span></span>
+<button onclick=stopAll() class="danger right" data-translate=stop>⬛ Stop All</button>
+<button onclick=load() data-translate=reload>↺</button>
+</div>
+<div class=attack-grid>
+<div class=atk-card id=card-deauth>
+<h3><span class=dot></span>Deauth</h3>
+<div class=stat>Targets<span id=deauthTargets>0</span></div>
+<div class=stat>Pkts/s<span id=deauthPkts>0/0</span></div>
+<button id=deauth onclick="start(0)" data-translate=start>START</button>
+</div>
+<div class=atk-card id=card-deauthAll>
+<h3><span class=dot></span>Deauth All</h3>
+<div class=stat>Targets<span id=deauthAllTargets>0</span></div>
+<div class=stat>Pkts/s<span id=deauthAllPkts>0/0</span></div>
+<button id=deauthAll onclick="start(3)" data-translate=start>START</button>
+</div>
+<div class=atk-card id=card-beacon>
+<h3><span class=dot></span>Beacon</h3>
+<div class=stat>SSIDs<span id=beaconTargets>0</span></div>
+<div class=stat>Pkts/s<span id=beaconPkts>0/0</span></div>
+<button id=beacon onclick="start(1)" data-translate=start>START</button>
+</div>
+<div class=atk-card id=card-probe>
+<h3><span class=dot></span>Probe</h3>
+<div class=stat>SSIDs<span id=probeTargets>0</span></div>
+<div class=stat>Pkts/s<span id=probePkts>0/0</span></div>
+<button id=probe onclick="start(2)" data-translate=start>START</button>
+</div>
+<div class=atk-card id=card-evilTwin>
+<h3><span class=dot></span>Evil Twin</h3>
+<div class=stat>Target<span id=evilTwinTargets style="font-size:.7rem;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">[Nothing]</span></div>
+<div class=stat>&nbsp;</div>
+<button id=evilTwin onclick="start(4)" data-translate=start>START</button>
+</div>
+</div>
+<div class=card>
+<h2>How it works</h2>
+<p data-translate=deauth_desc><b style="color:var(--text)">Deauth</b> — Disconnects devices by sending 802.11 deauthentication frames. Select target APs/stations on the Scan page first.</p>
+<p data-translate=beacon_desc><b style="color:var(--text)">Beacon</b> — Broadcasts fake WiFi network names. Add SSIDs on the SSIDs page.</p>
+<p data-translate=probe_desc><b style="color:var(--text)">Probe</b> — Sends probe requests for known SSIDs to confuse WiFi trackers.</p>
+<p><b style="color:var(--text)">Evil Twin</b> — Creates a clone AP and captures credentials via captive portal.</p>
+</div>
+</div>
+<footer>Nyx8266 · <a href=info.html>Credits</a></footer>
+</body></html>

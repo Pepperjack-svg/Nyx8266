@@ -1,0 +1,21 @@
+<!DOCTYPE html><html><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=theme-color content=#0d1117><title>Nyx8266</title><link rel=stylesheet href=style.css><script src=js/site.js></script><script src=js/settings.js></script></head><body onload=loadLang()>
+<nav><ul class=menu>
+<li><a href=scan.html data-translate=scan>Scan</a></li>
+<li><a href=ssids.html data-translate=ssids>SSIDs</a></li>
+<li><a href=attack.html data-translate=attacks>Attack</a></li>
+<li><a href=fsmanager.html>FS</a></li>
+<li><a href=settings.html class=active data-translate=settings>Settings</a></li>
+</ul></nav>
+<div id=status>●</div>
+<div class=container>
+<h1 data-translate=settings>Settings</h1>
+<div class=row>
+<button onclick=save() class=primary data-translate=save>💾 Save</button>
+<button onclick=load() data-translate=reload>↺ Reload</button>
+<button onclick="getFile('run?cmd=reboot')" class=danger data-translate=reboot>↻ Reboot</button>
+<button onclick="getFile('run?cmd=reset;;save settings');location.reload()" class="danger right" data-translate=reset>⚠ Reset</button>
+</div>
+<div class=card id=settingsList></div>
+</div>
+<footer>Nyx8266 · <a href=info.html>Credits</a></footer>
+</body></html>

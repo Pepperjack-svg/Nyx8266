@@ -1,0 +1,136 @@
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#00d4ff;--danger:#f85149;--success:#3fb950;--warn:#d29922;--nav-h:48px;--touch:44px}
+*{box-sizing:border-box;margin:0;padding:0}
+/* -webkit-text-size-adjust: 100% prevents iOS auto font-scaling on orientation change */
+body{background:var(--bg);color:var(--text);font-family:ui-monospace,'Cascadia Code',monospace;padding-top:var(--nav-h);min-height:100vh;-webkit-text-size-adjust:100%}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+/* ── NAV ── */
+/* overflow-x:auto + scrollbar hidden = scrollable on 320 px without wrapping */
+nav{background:var(--card);border-bottom:1px solid var(--border);height:var(--nav-h);display:flex;align-items:center;position:fixed;top:0;width:100%;z-index:100;padding:0 .5rem;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+.menu{list-style:none;display:flex;gap:.15rem;align-items:center;flex-shrink:0}
+/* min-height:var(--touch) on anchor = 44 px tap area in nav */
+.menu a{color:var(--muted);text-decoration:none;padding:0 .6rem;border-radius:6px;font-size:.8rem;letter-spacing:.02em;white-space:nowrap;transition:color .18s,background .18s;display:inline-flex;align-items:center;min-height:var(--touch)}
+.menu a:hover{color:var(--text);background:rgba(0,212,255,.08)}
+.menu a.active{color:var(--accent);background:rgba(0,212,255,.12)}
+/* ── LAYOUT ── */
+.container{max-width:960px;margin:0 auto;padding:1rem}
+.row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-bottom:.75rem}
+.flex{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.right{margin-left:auto}
+/* Grid columns used by settings.js-generated HTML and ssids.html */
+.col-6{flex:1 1 calc(50% - .4rem);min-width:130px}
+.col-12{flex:1 1 100%;width:100%}
+/* ── HEADINGS ── */
+h1{font-size:1.3rem;color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:.5rem;margin-bottom:.75rem;font-weight:400;letter-spacing:.05em}
+h2{font-size:1rem;color:var(--text);margin:.75rem 0 .4rem;font-weight:400}
+h3{font-size:.9rem;font-weight:600;color:var(--text)}
+p{line-height:1.6;color:var(--muted);font-size:.83rem;margin:.4rem 0}
+hr{border:none;border-top:1px solid var(--border);margin:.75rem 0}
+/* ── CARD ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.9rem;margin-bottom:.75rem}
+/* ── BUTTONS ──
+   min-height:44px meets iOS/Android touch target guidelines.
+   touch-action:manipulation removes the 300 ms tap delay on mobile.
+   -webkit-tap-highlight-color:transparent removes the grey flash on iOS. */
+button,input[type=submit],input[type=button]{min-height:var(--touch);padding:.35rem .85rem;font-size:.82rem;font-family:inherit;background:rgba(240,246,252,.07);border:1px solid var(--border);border-radius:6px;color:var(--text);cursor:pointer;transition:background .15s,border-color .15s;white-space:nowrap;letter-spacing:.03em;touch-action:manipulation;-webkit-tap-highlight-color:transparent;display:inline-flex;align-items:center;justify-content:center;gap:.35rem}
+button:hover{background:#21262d;border-color:var(--accent)}
+button:active{transform:scale(.96)}
+button.primary{background:rgba(0,212,255,.12);border-color:var(--accent);color:var(--accent)}
+button.danger{background:rgba(248,81,73,.12);border-color:var(--danger);color:var(--danger)}
+button.success{background:rgba(63,185,80,.12);border-color:var(--success);color:var(--success)}
+button.running{background:rgba(248,81,73,.15);border-color:var(--danger);color:var(--danger);animation:blink-border 1.2s infinite}
+button:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
+@keyframes blink-border{0%,100%{box-shadow:none}50%{box-shadow:0 0 6px var(--danger)}}
+/* ── INPUTS ──
+   min-height:40px keeps inputs comfortably tappable.
+   font-size:1rem on mobile prevents iOS Safari auto-zoom on focus
+   (iOS zooms when input font-size < 16px). */
+input[type=text],input[type=number],input[type=password],select,textarea{min-height:40px;padding:0 8px;background:var(--card);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:inherit;font-size:.82rem;transition:border-color .15s;touch-action:manipulation;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+/* Override width:100% for small inline number/select inputs */
+input[type=number]{width:auto;min-width:60px}
+select{width:auto}
+input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px;min-height:0;width:auto}
+/* Prevent iOS zoom: set 16px on mobile, visual size stays via transform scaling */
+@media(max-width:600px){input[type=text],input[type=password],textarea{font-size:1rem}}
+/* ── STATUS ── */
+#status{position:fixed;top:calc(var(--nav-h) + 4px);right:.75rem;padding:.25rem .7rem;border-radius:12px;font-size:.72rem;z-index:200;border:1px solid var(--border);background:var(--card);color:var(--muted);transition:color .3s,border-color .3s;pointer-events:none;user-select:none}
+#status.ok{border-color:var(--success);color:var(--success)}
+#status.err{border-color:var(--danger);color:var(--danger)}
+#status.loading{border-color:var(--warn);color:var(--warn)}
+/* ── TABLES ──
+   .table-wrap provides horizontal scrolling without breaking layout.
+   th is sticky so column headers stay visible while scrolling vertically. */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{color:var(--muted);font-weight:500;padding:.45rem .5rem;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap;background:var(--card);position:sticky;top:0;z-index:1}
+td{padding:.45rem .5rem;border-bottom:1px solid rgba(48,54,61,.5);word-break:break-all;vertical-align:middle}
+tr.selected>td{background:rgba(0,212,255,.06)}
+tbody tr:hover>td{background:#1c2128;transition:background .12s}
+/* ── SIGNAL METER ── */
+.meter{height:5px;background:var(--border);border-radius:3px;min-width:55px;overflow:hidden;display:inline-block;vertical-align:middle}
+.meter-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.meter-fill.g{background:var(--success)}
+.meter-fill.y{background:var(--warn)}
+.meter-fill.r{background:var(--danger)}
+/* ── ATTACK CARDS ── */
+.attack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:.65rem;margin-bottom:.75rem}
+.atk-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.8rem;transition:border-color .2s,box-shadow .2s}
+.atk-card.running{border-color:var(--danger);box-shadow:0 0 10px rgba(248,81,73,.18)}
+.atk-card .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--muted);margin-right:.35rem;vertical-align:middle;transition:background .2s}
+.atk-card.running .dot{background:var(--danger);animation:pulse 1s ease-in-out infinite}
+.atk-card .stat{font-size:.73rem;color:var(--muted);margin:.2rem 0;display:flex;justify-content:space-between}
+.atk-card .stat span{color:var(--text)}
+.atk-card button{width:100%;margin-top:.55rem}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.5}}
+/* ── CHECKBOXES —— enlarged hit area for mobile ── */
+.checkBoxContainer{position:relative;padding-left:26px;cursor:pointer;user-select:none;display:inline-flex;align-items:center;min-height:var(--touch);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.checkBoxContainer input{position:absolute;opacity:0;cursor:pointer;height:0;width:0}
+.checkmark{position:absolute;left:0;top:50%;transform:translateY(-50%);height:18px;width:18px;background:var(--card);border:1px solid var(--border);border-radius:3px;transition:background .15s,border-color .15s}
+.checkBoxContainer:hover .checkmark{border-color:var(--accent)}
+.checkBoxContainer input:checked~.checkmark{background:var(--accent);border-color:var(--accent)}
+.checkBoxContainer .checkmark:after{content:'';position:absolute;display:none;left:5px;top:2px;width:5px;height:9px;border:solid #000;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.checkBoxContainer input:checked~.checkmark:after{display:block}
+/* ── SETTINGS ── */
+.settingName{font-size:.82rem;color:var(--text);font-weight:500}
+.labelFix{display:flex;align-items:center}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--border);gap:.5rem;flex-wrap:wrap}
+.setting-row:last-child{border-bottom:none}
+.setting-label{font-size:.82rem;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;font-weight:600}
+/* ── PROGRESS / LOADER ── */
+.progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;width:100%;margin:.75rem 0}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--success));border-radius:2px;animation:prog-fill linear forwards}
+@keyframes prog-fill{from{width:0}to{width:100%}}
+/* ── UTILS ── */
+.selected{background:rgba(0,212,255,.06)}
+.hide,.hidden{display:none}
+.show{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.red{color:var(--danger)}.green{color:var(--success)}
+.center{text-align:center}
+/* ── PACKET RATE BADGE ── */
+.pkt-badge{display:inline-block;background:rgba(0,212,255,.1);border:1px solid var(--accent);color:var(--accent);border-radius:4px;padding:.1rem .4rem;font-size:.72rem;min-width:40px;text-align:center}
+/* ── FOOTER ── */
+footer{text-align:center;color:var(--muted);font-size:.73rem;padding:2rem 0}
+footer a{color:var(--muted)}
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+/* ── SPLASH (index) ── */
+body.splash{display:grid;place-items:center;height:100vh;padding:0;overflow:hidden;background:#000}
+.splash-title{font-family:ui-monospace,monospace;font-size:clamp(2.5rem,10vw,8rem);color:#fff;letter-spacing:.05em;text-align:center}
+.splash-sub{color:var(--muted);font-size:.9rem;text-align:center;margin-top:.5rem}
+.bubble{position:absolute;border-radius:50%;opacity:0;animation:bubble-rise linear forwards}
+@keyframes bubble-rise{0%{opacity:0;transform:translateY(0) scale(1)}60%{opacity:.6}100%{opacity:0;transform:translateY(-120vh) scale(.3)}}
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .hide-sm{display:none!important}
+  .attack-grid{grid-template-columns:1fr 1fr}
+  .container{padding:.65rem}
+  h1{font-size:1.1rem}
+  .card{padding:.7rem}
+}
+@media(max-width:380px){
+  .attack-grid{grid-template-columns:1fr}
+  .col-6{flex:1 1 100%}
+}
