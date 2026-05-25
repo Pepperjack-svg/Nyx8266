@@ -1,11 +1,42 @@
 /* Nyx8266 WebUI - settings.js */
 var settingsJson = {};
+var _retryTimer = null;
+
+/*
+ * Called when settings.json fetch fails (network error, timeout, or bad JSON).
+ * Shows a status message in the list and starts a 2 s poller that retries
+ * load() automatically once the heartbeat in site.js brings the device back
+ * online (status element's className flips to "ok").
+ */
+function _onLoadFail() {
+  /* Push status to "err" so site.js heartbeat fires and eventually flips it
+     to "ok", which unblocks the retry timer below. Without this the status
+     stays stuck at "loading" and neither the heartbeat nor the retry ever run. */
+  showMessage("ERROR:settings");
+  var list = getE("settingsList");
+  if (list) list.innerHTML = "<p style='color:var(--warn)'>&#x21BA; Device offline &mdash; will retry&hellip;</p>";
+  if (_retryTimer) return;
+  _retryTimer = setInterval(function () {
+    var s = getE("status");
+    if (s && s.className === "ok") {
+      clearInterval(_retryTimer);
+      _retryTimer = null;
+      load();
+    }
+  }, 2000);
+}
 
 function load() {
+  /* Show a placeholder only on the very first load (list still empty) */
+  var list = getE("settingsList");
+  if (list && !Object.keys(settingsJson).length)
+    list.innerHTML = "<p style='color:var(--muted)'>Loading&hellip;</p>";
+
   getFile("settings.json", function (res) {
-    try { settingsJson = JSON.parse(res); } catch (e) { return; }
+    try { settingsJson = JSON.parse(res); } catch (e) { _onLoadFail(); return; }
+    if (_retryTimer) { clearInterval(_retryTimer); _retryTimer = null; }
     draw();
-  });
+  }, 10000, "GET", _onLoadFail, _onLoadFail);
 }
 
 /*
@@ -71,6 +102,25 @@ function draw() {
  * Fix: strip backslashes and double-quotes from value before embedding.
  * The ESP8266 CLI accepts unquoted values for simple strings/numbers.
  */
+/*
+ * doReset — sends "reset settings" then "save settings" in sequence.
+ *
+ * The old code used "reset;;save settings" as a single command string.
+ * The CLI separates commands by newlines, not semicolons, so ";;save settings"
+ * was treated as part of the reset argument and never ran. The save step
+ * therefore never happened, leaving the EEPROM un-persisted after reset.
+ *
+ * Fix: chain two getFile() calls so save only runs after reset confirms OK.
+ */
+function doReset() {
+  if (!confirm("Reset all settings to defaults? The device will reboot.")) return;
+  getFile("run?cmd=reset settings", function () {
+    getFile("run?cmd=save settings", function () {
+      setTimeout(function () { location.reload(); }, 800);
+    });
+  });
+}
+
 function save(key, value) {
   if (key) {
     settingsJson[key] = value;
