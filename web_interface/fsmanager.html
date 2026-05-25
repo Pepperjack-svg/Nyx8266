@@ -1,1 +1,57 @@
-<!Doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=0.8, minimal-ui"><meta name="theme-color" content="#36393E"><meta name="description" content="Nyx8266"><title>Nyx8266</title><link rel="stylesheet" type="text/css" href="style.css"><script src="js/site.js"></script><script src="js/fs.js"></script></head><body onload="loadLang()"><nav><ul class="menu"><li><a href="scan.html" data-translate="scan">Scan</a></li><li><a href="ssids.html" data-translate="ssids">SSIDs</a></li><li><a href="attack.html" data-translate="attacks">Attack</a></li><li><a href="fsmanager.html">FS</a></li><li><a href="settings.html" data-translate="settings">Settings</a></li></ul></nav><div id="status"></div><div class="container"><div class="row"><div class="col-12"><h1 class="header">FS Manager</h1><div style="padding-left: 20px; padding-right: 20px; border-style: solid; border-width: 1px; border-left-width: 0; border-right-width: 0;"><table id="log"></table></div><div style="padding: 20px; border-style: solid; border-width: 1px; border-left-width: 0; border-right-width: 0;"><form action="/pathsave" method="get"><a style="padding-bottom: 20px;" href="/eviltwin">Evil Twin</a><input type="text" name="path" id="eviltwinpath" placeholder="/example.html"><input type="submit" value="save"><br><br></form><form action='/upload' style="display: flex;" method='post' enctype='multipart/form-data'><input type='file' name='upload' placeholder=""><input type='submit' value='Upload'></form><p id="fsinfo" style="font-size:.8rem;color:var(--muted);margin:.5rem 0"></p><table id="fileList"><tr><th>File Name</th><th>Size</th><th></th></tr></table><button onclick="format();" style="width: 100%; margin-top: 20px;">Format Data</button></div></div></div></div><footer><span id="Nyx8266">Nyx8266</span><br><span id="deautherx">By <a href="https://github.com/Pepperjack-svg/" target="_blank">PepperJack</a></span><br><br><a href="https://github.com/Pepperjack-svg" target="_blank">Wiki</a> | <a href="info.html">Credits</a></footer></body></html>
+<!DOCTYPE html><html><head>
+<meta charset=UTF-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=theme-color content=#09090E>
+<title>Nyx8266</title>
+<link rel=stylesheet href=style.css>
+<script src=js/site.js></script>
+<script src=js/fs.js></script>
+</head><body onload=loadLang()>
+<nav><ul class=menu>
+<li><a href=scan.html data-translate=scan>Scan</a></li>
+<li><a href=ssids.html data-translate=ssids>SSIDs</a></li>
+<li><a href=attack.html data-translate=attacks>Attack</a></li>
+<li><a href=fsmanager.html class=active>FS</a></li>
+<li><a href=settings.html data-translate=settings>Settings</a></li>
+</ul></nav>
+<div id=status>●</div>
+<div class=container>
+<h1>FS Manager</h1>
+
+<div class=card>
+<h2>Evil Twin &mdash; <a href=/eviltwin style="font-size:.8rem">view portal</a></h2>
+<form action=/pathsave method=get class=flex style="flex-wrap:wrap;gap:.5rem">
+<input type=text name=path id=eviltwinpath placeholder=/example.html style="flex:1 1 160px">
+<input type=submit value=save>
+</form>
+</div>
+
+<div class=card id=logCard style="display:none">
+<h2>Credentials</h2>
+<div class=table-wrap>
+<table id=log></table>
+</div>
+</div>
+
+<div class=card>
+<h2>Upload File</h2>
+<form action=/upload method=post enctype=multipart/form-data class=flex style="flex-wrap:wrap;gap:.5rem;align-items:center">
+<label class=file-label>
+<input type=file name=upload id=fileInput onchange="this.parentNode.querySelector('span').textContent=this.files[0]?this.files[0].name:'No file chosen'">
+<span>No file chosen</span>
+</label>
+<input type=submit value=Upload>
+</form>
+</div>
+
+<div class=card>
+<p id=fsinfo style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem"></p>
+<div class=table-wrap>
+<table id=fileList><tr><th>File Name</th><th>Size</th><th></th></tr></table>
+</div>
+<button onclick=format() class="danger col-12" style="margin-top:.75rem">Format Data</button>
+</div>
+
+</div>
+<footer>Nyx8266</footer>
+</body></html>

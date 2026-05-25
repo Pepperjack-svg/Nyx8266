@@ -1,1 +1,74 @@
-<!Doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=0.8, minimal-ui"><meta name="theme-color" content="#36393E"><meta name="description" content="Nyx8266"><title>Nyx8266</title><link rel="stylesheet" type="text/css" href="style.css"><script src="js/site.js"></script><script src="js/ssids.js"></script></head><body onload="loadLang()"><nav><ul class="menu"><li><a href="scan.html" data-translate="scan">Scan</a></li><li><a href="ssids.html" data-translate="ssids">SSIDs</a></li><li><a href="attack.html" data-translate="attacks">Attack</a></li><li><a href="fsmanager.html">FS</a></li><li><a href="settings.html" data-translate="settings">Settings</a></li></ul></nav><div id="status"></div><div class="container"><div class="row"><div class="col-12"><h1 class="header" data-translate="ssids">SSIDs</h1></div></div><div class="row"><div class="col-6"><label for="ssid">SSID</label></div><div class="col-6"><input type="text" id="ssid" name="ssid" placeholder="SSID" maxlength="32"></div></div><div class="row"><div class="col-6"><label>WPA2</label></div><div class="col-6"><label class='checkBoxContainer'><input id="enc" type='checkbox'><span class='checkmark'></span></label></div></div><div class="row"><div class="col-6"><label data-translate="number">Number</label></div><div class="col-6"><input id="ssidNum" type="number" value="1" max="60" min="1"></div></div><div class="row"><div class="col-6"><label data-translate="overwrite">Overwrite</label></div><div class="col-6"><label class='checkBoxContainer'><input id="overwrite" type='checkbox' checked><span class='checkmark'></span></label></div></div><div class="row"><div class="col-12"><button onclick="add(); document.getElementById('ssid').value = '';" data-translate="add">add</button><button onclick="addSelected()" data-translate="add_selected">clone selected APs</button></div></div><div class="row"><div class="col-12"><button onclick="load()" class="right" data-translate="reload">Reload</button><p><span class="red" data-translate="info_span">INFO:</span><br><span data-translate="ssids_info">- This SSID list is used for the beacon and probe attack.<br>- Each SSID can be up to 32 characters.<br>- Don't forget to click save when you edited a SSID.<br>- You have to click Reload after cloning SSIDs.<br></span><span data-translate="info_disclaimer">In case of an unexpected error, please reload the site andlook at the serial monitor for further debugging.</span><br></p><hr></div></div><div class="row"><div class="col-6"><label for="interval" data-translate="time_interval">Time Interval</label></div><div class="col-6"><input id="interval" name="interval" type="number" value="10" max="600" min="1">s</div></div><div class="row"><div class="col-12"><button onclick="enableRandom()" id="randomBtn">Enable Random Mode</button><p data-translate="random_desc">Enable the random mode to generate a random SSID list in a giveninterval.</p><hr><table id="ssidTable"></table><button onclick="removeAll()" class="red" data-translate="remove_all">Remove All</button></div></div></div><footer><span id="Nyx8266">Nyx8266</span><br><span id="deautherx">By <a href="https://github.com/Pepperjack-svg/" target="_blank">PepperJack</a></span><br><br><a href="https://github.com/Pepperjack-svg" target="_blank">Wiki</a> | <a href="info.html">Credits</a></footer></body></html>
+<!DOCTYPE html><html><head>
+<meta charset=UTF-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=theme-color content=#09090E>
+<title>Nyx8266</title>
+<link rel=stylesheet href=style.css>
+<script src=js/site.js></script>
+<script src=js/ssids.js></script>
+</head><body onload=loadLang()>
+<nav><ul class=menu>
+<li><a href=scan.html data-translate=scan>Scan</a></li>
+<li><a href=ssids.html class=active data-translate=ssids>SSIDs</a></li>
+<li><a href=attack.html data-translate=attacks>Attack</a></li>
+<li><a href=fsmanager.html>FS</a></li>
+<li><a href=settings.html data-translate=settings>Settings</a></li>
+</ul></nav>
+<div id=status>●</div>
+<div class=container>
+<h1 data-translate=ssids>SSIDs</h1>
+
+<div class=card>
+<div class=setting-row>
+<span class=setting-label>SSID</span>
+<input type=text id=ssid name=ssid placeholder=SSID maxlength=32>
+</div>
+<div class=setting-row>
+<span class=setting-label>WPA2</span>
+<label class=checkBoxContainer><input id=enc type=checkbox><span class=checkmark></span></label>
+</div>
+<div class=setting-row>
+<span class=setting-label data-translate=number>Number</span>
+<input id=ssidNum type=number value=1 max=60 min=1>
+</div>
+<div class=setting-row>
+<span class=setting-label data-translate=overwrite>Overwrite</span>
+<label class=checkBoxContainer><input id=overwrite type=checkbox checked><span class=checkmark></span></label>
+</div>
+<div class=flex style="margin-top:.65rem;flex-wrap:wrap">
+<button onclick="add();document.getElementById('ssid').value=''" data-translate=add>add</button>
+<button onclick=addSelected() data-translate=add_selected>clone selected APs</button>
+</div>
+</div>
+
+<div class=card>
+<div class=flex style="margin-bottom:.6rem;flex-wrap:wrap">
+<div style="display:inline-flex;align-items:center;gap:.5rem">
+<span class=setting-label data-translate=time_interval>Time Interval</span>
+<input id=interval name=interval type=number value=10 max=600 min=1 style="width:4.5rem;min-width:4.5rem"> s
+</div>
+<div class=flex style="margin-left:auto;gap:.4rem">
+<button onclick=enableRandom() id=randomBtn>Enable Random Mode</button>
+<button onclick=load() data-translate=reload>↺</button>
+</div>
+</div>
+<hr>
+<div class=table-wrap>
+<table id=ssidTable></table>
+</div>
+<div class=flex style="margin-top:.65rem">
+<button onclick=removeAll() class=danger data-translate=remove_all>✗ Remove All</button>
+</div>
+</div>
+
+<div class=card>
+<p style="font-size:.78rem;color:var(--muted);line-height:1.7">
+<span class=red data-translate=info_span>INFO:</span><br>
+<span data-translate=ssids_info>- This SSID list is used for the beacon and probe attack.<br>- Each SSID can be up to 32 characters.<br>- Don't forget to click save when you edited a SSID.<br>- You have to click Reload after cloning SSIDs.</span><br>
+<span data-translate=info_disclaimer>In case of an unexpected error, please reload the site and look at the serial monitor for further debugging.</span>
+</p>
+</div>
+
+</div>
+<footer>Nyx8266</footer>
+</body></html>
