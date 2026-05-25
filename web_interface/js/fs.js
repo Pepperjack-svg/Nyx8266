@@ -17,11 +17,13 @@ function load() {
   getFile("log.json", function (res) {
     try { var array = JSON.parse(res); } catch (e) { return; }
     var logDiv = document.getElementById("log");
+    var logCard = document.getElementById("logCard");
     var html = "<tr><th>SSID</th><th>Password</th></tr>";
     for (var i = 0; i < array.length; i++) {
       html += "<tr><td>" + esc(array[i].ssid) + "</td><td>" + esc(array[i].pass) + "</td></tr>";
     }
     logDiv.innerHTML = html;
+    if (logCard) logCard.style.display = array.length ? "" : "none";
   });
   getFile("fsinfo", function (res) {
     /* textContent — fsinfo is plain text, not HTML */
@@ -57,8 +59,7 @@ function filelist() {
       html += "<tr>"
         + "<td>" + esc(_fileList[i].name) + "</td>"
         + "<td>" + esc(String(_fileList[i].size)) + "</td>"
-        + "<td><button onclick='deleteFile(" + i + ")' class='danger' "
-        + "style='height:24px;padding:0 6px;font-size:.72rem'>DELETE</button></td>"
+        + "<td><button onclick='deleteFile(" + i + ")' class='danger sm-btn'>DELETE</button></td>"
         + "</tr>";
     }
     listView.innerHTML = html;

@@ -3,11 +3,10 @@ var nameJson=[];
 var scanJson={aps:[],stations:[]};
 
 function sigBars(rssi){
-  /* rssi typically -100..-30 */
   var pct=Math.min(100,Math.max(0,rssi+100));
   var cls=pct>60?"g":pct>35?"y":"r";
-  var fill="<div class=meter-fill style='width:"+pct+"%;' class="+cls+"></div>";
-  return "<div class=meter style='background:var(--border)'><div class='meter-fill "+cls+"' style='width:"+pct+"%'></div></div><span style='font-size:.7rem;color:var(--muted);margin-left:4px'>"+rssi+"</span>";
+  return "<div class=meter><div class='meter-fill "+cls+"' style='width:"+pct+"%'></div></div>"
+        +"<span style='font-size:.7rem;color:var(--muted);margin-left:4px'>"+rssi+"</span>";
 }
 
 function drawScan(){
@@ -24,7 +23,7 @@ function drawScan(){
       +"<td class=hide-sm>"+esc(scanJson.aps[i][4])+"</td>"
       +"<td class=hide-sm style='font-size:.72rem'>"+esc(scanJson.aps[i][5])+"</td>"
       +"<td><label class=checkBoxContainer><input type=checkbox "+(sel?"checked":"")+" onclick='selectRow(0,"+i+","+(sel?"false":"true")+")' /><span class=checkmark></span></label></td>"
-      +"<td><button class=danger style='height:24px;padding:0 6px;font-size:.72rem' onclick='remove(0,"+i+")'>✕</button></td>"
+      +"<td><button class='danger sm-btn' onclick='remove(0,"+i+")'>✕</button></td>"
       +"</tr>";
   }
   getE("apTable").innerHTML=html;
@@ -44,7 +43,7 @@ function drawScan(){
       +"<td class=hide-sm>"+esc(scanJson.stations[i][4])+"</td>"
       +"<td>"+ap+"</td>"
       +"<td><label class=checkBoxContainer><input type=checkbox "+(sel?"checked":"")+" onclick='selectRow(1,"+i+","+(sel?"false":"true")+")' /><span class=checkmark></span></label></td>"
-      +"<td><button class=danger style='height:24px;padding:0 6px;font-size:.72rem' onclick='remove(1,"+i+")'>✕</button></td>"
+      +"<td><button class='danger sm-btn' onclick='remove(1,"+i+")'>✕</button></td>"
       +"</tr>";
   }
   getE("stTable").innerHTML=html;
@@ -63,9 +62,9 @@ function drawNames(){
       +"<td contenteditable=true id='name_"+i+"_name'>"+esc(nameJson[i][2].substring(0,16))+"</td>"
       +"<td class=hide-sm contenteditable=true id='name_"+i+"_ch'>"+esc(nameJson[i][4])+"</td>"
       +"<td><input type=hidden id='name_"+i+"_apbssid' value='"+esc(nameJson[i][3])+"'></td>"
-      +"<td><button class=success style='height:24px;padding:0 8px;font-size:.72rem' onclick='save("+i+")'>Save</button></td>"
+      +"<td><button class='success sm-btn' onclick='save("+i+")'>Save</button></td>"
       +"<td><label class=checkBoxContainer><input type=checkbox "+(sel?"checked":"")+" onclick='selectRow(2,"+i+","+(sel?"false":"true")+")' /><span class=checkmark></span></label></td>"
-      +"<td><button class=danger style='height:24px;padding:0 6px;font-size:.72rem' onclick='remove(2,"+i+")'>✕</button></td>"
+      +"<td><button class='danger sm-btn' onclick='remove(2,"+i+")'>✕</button></td>"
       +"</tr>";
   }
   getE("nTable").innerHTML=html;

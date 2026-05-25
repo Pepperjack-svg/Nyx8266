@@ -23,8 +23,8 @@ function draw() {
       + esc(ssidJson.ssids[i][0]) + "</td>"
       + "<td class='lock clickable' onclick='changeEnc(" + i + ")' id='enc_" + i + "'>"
       + (ssidJson.ssids[i][1] ? "&#x1f512;" : "-") + "</td>"
-      + "<td class='save'><button class='green' onclick='save(" + i + ")'>" + (lang("save") || "Save") + "</button></td>"
-      + "<td class='remove'><button class='red' onclick='remove(" + i + ")'>X</button></td>"
+      + "<td class='save'><button class='success' onclick='save(" + i + ")'>" + (lang("save") || "Save") + "</button></td>"
+      + "<td class='remove'><button class='danger' onclick='remove(" + i + ")'>✕</button></td>"
       + "</tr>";
   }
 
