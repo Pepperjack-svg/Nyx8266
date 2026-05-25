@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=theme-color content=#0d1117><title>Nyx8266</title><link rel=stylesheet href=style.css><script src=js/site.js></script><script src=js/attack.js></script></head><body onload=loadLang()>
+<!DOCTYPE html><html><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=theme-color content=#09090E><title>Nyx8266</title><link rel=stylesheet href=style.css><script src=js/site.js></script><script src=js/attack.js></script></head><body onload=loadLang()>
 <nav><ul class=menu>
 <li><a href=scan.html data-translate=scan>Scan</a></li>
 <li><a href=ssids.html data-translate=ssids>SSIDs</a></li>
@@ -11,8 +11,8 @@
 <h1 data-translate=attacks>Attacks</h1>
 <div class=row style="margin-bottom:.75rem">
 <span style="color:var(--muted);font-size:.8rem">All Pkts/s: <span id=allpkts class=pkt-badge>0</span></span>
-<button onclick=stopAll() class="danger right" data-translate=stop>⬛ Stop All</button>
-<button onclick=load() data-translate=reload>↺</button>
+<button onclick=load() class=right data-translate=reload>↺</button>
+<button onclick=stopAll() class=danger data-translate=stop>⬛ Stop All</button>
 </div>
 <div class=attack-grid>
 <div class=atk-card id=card-deauth>
@@ -41,7 +41,7 @@
 </div>
 <div class=atk-card id=card-evilTwin>
 <h3><span class=dot></span>Evil Twin</h3>
-<div class=stat>Target<span id=evilTwinTargets style="font-size:.7rem;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">[Nothing]</span></div>
+<div class=stat>Target<span id=evilTwinTargets class=et-target>[Nothing]</span></div>
 <div class=stat>&nbsp;</div>
 <button id=evilTwin onclick="start(4)" data-translate=start>START</button>
 </div>
@@ -54,5 +54,5 @@
 <p><b style="color:var(--text)">Evil Twin</b> — Creates a clone AP and captures credentials via captive portal.</p>
 </div>
 </div>
-<footer>Nyx8266 · <a href=info.html>Credits</a></footer>
+<footer>Nyx8266</footer>
 </body></html>
