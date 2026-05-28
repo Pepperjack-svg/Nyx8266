@@ -1,27 +1,12 @@
 /* Nyx8266 WebUI - settings.js */
 var settingsJson = {};
-var _retryTimer = null;
 var _loadPending = false;
 
-/*
- * Called when settings.json fetch fails (network error, timeout, or bad JSON).
- *
- * Old approach: relied on the 6-second heartbeat in site.js to probe
- * attack.json first, then waited up to 2s for a setInterval to detect
- * the status flip — worst-case 28s per retry cycle, which looks like a
- * permanently broken page.
- *
- * New approach: setTimeout retries load() directly after 3s.
- * No dependency on heartbeat, no className polling, no setInterval.
- * Cycle time: 3s delay + (5s timeout × 2 built-in retries) = ~13s max.
- */
 function _onLoadFail() {
   _loadPending = false;
   showMessage("ERROR:settings");
   var list = getE("settingsList");
-  if (list) list.innerHTML = "<p style='color:var(--warn)'>&#x21BA; Device offline &mdash; will retry&hellip;</p>";
-  if (_retryTimer) return;
-  _retryTimer = setTimeout(function () { _retryTimer = null; load(); }, 3000);
+  if (list) list.innerHTML = "<p style='color:var(--warn)'>&#x21BA; Device offline &mdash; click Reload to retry.</p>";
 }
 
 function load() {
@@ -33,7 +18,6 @@ function load() {
   getFile("settings.json", function (res) {
     _loadPending = false;
     try { settingsJson = JSON.parse(res); } catch (e) { _onLoadFail(); return; }
-    if (_retryTimer) { clearTimeout(_retryTimer); _retryTimer = null; }
     draw();
   }, 5000, "GET", _onLoadFail, _onLoadFail);
 }
