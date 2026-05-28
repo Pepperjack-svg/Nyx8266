@@ -1,43 +1,47 @@
 /* Nyx8266 WebUI - settings.js */
 var settingsJson = {};
 var _retryTimer = null;
+var _loadPending = false;
 
 /*
  * Called when settings.json fetch fails (network error, timeout, or bad JSON).
- * Shows a status message in the list and starts a 2 s poller that retries
- * load() automatically once the heartbeat in site.js brings the device back
- * online (status element's className flips to "ok").
+ *
+ * Old approach: relied on the 6-second heartbeat in site.js to probe
+ * attack.json first, then waited up to 2s for a setInterval to detect
+ * the status flip — worst-case 28s per retry cycle, which looks like a
+ * permanently broken page.
+ *
+ * New approach: setTimeout retries load() directly after 3s.
+ * No dependency on heartbeat, no className polling, no setInterval.
+ * Cycle time: 3s delay + (5s timeout × 2 built-in retries) = ~13s max.
  */
 function _onLoadFail() {
-  /* Push status to "err" so site.js heartbeat fires and eventually flips it
-     to "ok", which unblocks the retry timer below. Without this the status
-     stays stuck at "loading" and neither the heartbeat nor the retry ever run. */
+  _loadPending = false;
   showMessage("ERROR:settings");
   var list = getE("settingsList");
   if (list) list.innerHTML = "<p style='color:var(--warn)'>&#x21BA; Device offline &mdash; will retry&hellip;</p>";
   if (_retryTimer) return;
-  _retryTimer = setInterval(function () {
-    var s = getE("status");
-    if (s && s.className === "ok") {
-      clearInterval(_retryTimer);
-      _retryTimer = null;
-      load();
-    }
-  }, 2000);
+  _retryTimer = setTimeout(function () { _retryTimer = null; load(); }, 3000);
 }
 
 function load() {
-  /* Show a placeholder only on the very first load (list still empty) */
+  if (_loadPending) return;
+  _loadPending = true;
   var list = getE("settingsList");
   if (list && !Object.keys(settingsJson).length)
     list.innerHTML = "<p style='color:var(--muted)'>Loading&hellip;</p>";
-
   getFile("settings.json", function (res) {
+    _loadPending = false;
     try { settingsJson = JSON.parse(res); } catch (e) { _onLoadFail(); return; }
-    if (_retryTimer) { clearInterval(_retryTimer); _retryTimer = null; }
+    if (_retryTimer) { clearTimeout(_retryTimer); _retryTimer = null; }
     draw();
-  }, 10000, "GET", _onLoadFail, _onLoadFail);
+  }, 5000, "GET", _onLoadFail, _onLoadFail);
 }
+
+/* Fetch settings.json immediately on page load in parallel with the lang
+   file — mirrors attack.js early-load pattern. Without this, settings had
+   to wait for the full lang chain (~2s) before even starting. */
+window.addEventListener("load", function () { load(); });
 
 /*
  * BUG FIX 1 — key escape order.

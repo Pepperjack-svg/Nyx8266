@@ -322,13 +322,10 @@ void setWifiChannel(uint8_t ch, bool force) {
 }
 
 void setOutputPower(float dBm) {
-    if (dBm > 20.5) {
-        dBm = 20.5;
-    } else if (dBm < 0) {
-        dBm = 0;
-    }
+    if (dBm > 20.5f) dBm = 20.5f;
+    else if (dBm < 0) dBm = 0;
 
-    uint8_t val = (dBm * 4.0f);
+    uint8_t val = (uint8_t)(dBm * 4.0f);
 
     system_phy_set_max_tpw(val);
 }
