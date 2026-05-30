@@ -235,7 +235,7 @@ void Attack::update() {
 
 void Attack::deauthUpdate() {
     if (!deauthAll && deauth.active && (deauth.maxPkts > 0) && (deauth.packetCounter < deauth.maxPkts)) {
-        if (deauth.time <= currentTime - (1000 / deauth.maxPkts)) {
+        if (currentTime - deauth.time >= (1000 / deauth.maxPkts)) {
             // APs
             if ((apCount > 0) && (deauth.tc < apCount)) {
                 if (accesspoints.getSelected(deauth.tc)) {
@@ -269,7 +269,7 @@ void Attack::deauthUpdate() {
 
 void Attack::deauthAllUpdate() {
     if (deauthAll && deauth.active && (deauth.maxPkts > 0) && (deauth.packetCounter < deauth.maxPkts)) {
-        if (deauth.time <= currentTime - (1000 / deauth.maxPkts)) {
+        if (currentTime - deauth.time >= (1000 / deauth.maxPkts)) {
             // APs
             if ((apCount > 0) && (deauth.tc < apCount)) {
                 tmpID = names.findID(accesspoints.getMac(deauth.tc));
@@ -313,7 +313,7 @@ void Attack::deauthAllUpdate() {
 
 void Attack::probeUpdate() {
     if (probe.active && (probe.maxPkts > 0) && (probe.packetCounter < probe.maxPkts)) {
-        if (probe.time <= currentTime - (1000 / probe.maxPkts)) {
+        if (currentTime - probe.time >= (1000 / probe.maxPkts)) {
             if (settings::getAttackSettings().attack_all_ch) setWifiChannel(probe.tc % 11, true);
             probe.tc += sendProbe(probe.tc);
 
@@ -324,7 +324,7 @@ void Attack::probeUpdate() {
 
 void Attack::beaconUpdate() {
     if (beacon.active && (beacon.maxPkts > 0) && (beacon.packetCounter < beacon.maxPkts)) {
-        if (beacon.time <= currentTime - (1000 / beacon.maxPkts)) {
+        if (currentTime - beacon.time >= (1000 / beacon.maxPkts)) {
             beacon.tc += sendBeacon(beacon.tc);
 
             if (beacon.tc >= ssids.count()) beacon.tc = 0;

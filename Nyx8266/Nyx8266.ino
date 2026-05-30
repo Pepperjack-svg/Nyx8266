@@ -49,7 +49,7 @@ simplebutton::Button* resetButton;
 #include "wifi.h"
 
 uint32_t autosaveTime = 0;
-uint32_t currentTime  = 0;
+volatile uint32_t currentTime = 0;
 
 bool booted = false;
 
