@@ -230,7 +230,7 @@
 #endif /* ifndef AP_SSID */
 
 #ifndef AP_PASSWD
-  #define AP_PASSWD "PepperJack"
+  #define AP_PASSWD "nyxdeauther"
 #endif /* ifndef AP_PASSWD */
 
 #ifndef AP_HIDDEN

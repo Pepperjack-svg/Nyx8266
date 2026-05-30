@@ -757,6 +757,20 @@ namespace wifi {
             prntln(W_STARTED_AP);
         }
     }
+
+    void applyAPSettings() {
+        /* Re-read AP credentials from settings and call softAP() so changes
+           made via the web UI take effect immediately without a reboot.
+           The HTTP response is already sent before cli.exec() runs (see the
+           /run handler), so the brief client disconnect is safe. */
+        setSSID(settings::getAccessPointSettings().ssid);
+        setPassword(settings::getAccessPointSettings().password);
+        setHidden(settings::getAccessPointSettings().hidden);
+        setChannel(settings::getWifiSettings().channel);
+        WiFi.softAP(ap_settings.ssid, ap_settings.password, ap_settings.channel, ap_settings.hidden);
+        prntln(W_STARTED_AP);
+    }
+
     void update() {
         /*
          * BUG FIX: removed !scan.isScanning() guard.

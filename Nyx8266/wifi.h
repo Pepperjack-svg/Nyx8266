@@ -24,6 +24,7 @@ namespace wifi {
 
     void stopAP();
     void resumeAP();
+    void applyAPSettings();
 
     void update();
 }

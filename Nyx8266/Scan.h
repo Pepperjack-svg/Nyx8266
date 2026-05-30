@@ -36,7 +36,11 @@ class Scan {
     public:
         Scan();
 
-        void sniffer(uint8_t* buf, uint16_t len);
+        /* ICACHE_RAM_ATTR: this is invoked from the WiFi RX hardware interrupt.
+           Any function called from interrupt context must reside in IRAM —
+           if it's in flash (ICACHE), a cache miss during a busy radio period
+           causes a fatal exception. */
+        void ICACHE_RAM_ATTR sniffer(uint8_t* buf, uint16_t len);
         void start(uint8_t mode, uint32_t time, uint8_t nextmode, uint32_t continueTime, bool channelHop, uint8_t channel);
         void start(uint8_t mode);
 
@@ -68,8 +72,11 @@ class Scan {
         String getEndSSID();
         int    getEndRSSI(); // returns dBm int — avoids String allocation per call
 
-        uint16_t deauths = 0;
-        uint16_t packets = 0;
+        /* volatile: written inside sniffer() which runs in the WiFi RX interrupt
+           context. Without volatile the compiler may cache the value in a register
+           and the main-loop read in update() would never see the increment. */
+        volatile uint16_t deauths = 0;
+        volatile uint16_t packets = 0;
 
     private:
         SimpleList<uint16_t>* list;                      // packet list
@@ -86,8 +93,8 @@ class Scan {
         uint32_t continueTime      = SCAN_DEFAULT_CONTINUE_TIME; // time in ms to wait until scan restarts
         uint32_t continueStartTime = 0;                          // when scan restarted
 
-        bool channelHop     = true;
-        uint16_t tmpDeauths = 0;
+        bool channelHop              = true;
+        volatile uint16_t tmpDeauths = 0; // written in RX interrupt, read in update()
 
         bool apWithChannel(uint8_t ch);
         int findAccesspoint(uint8_t* mac);

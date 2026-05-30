@@ -622,7 +622,7 @@ void CLI::runCommand(String input) {
             load ? names.load() : names.save(false);
             load ? settings::load() : settings::save(false);
 
-            if (!load) scan.save(false);
+            if (!load) { scan.save(false); wifi::applyAPSettings(); }
             return;
         }
 
@@ -634,7 +634,7 @@ void CLI::runCommand(String input) {
         } else {
             if (eqlsCMD(1, CLI_SSID)) load ? ssids.load() : ssids.save(true);
             else if (eqlsCMD(1, CLI_NAME)) load ? names.load() : names.save(true);
-            else if (eqlsCMD(1, CLI_SETTING)) load ? settings::load() : settings::save(true);
+            else if (eqlsCMD(1, CLI_SETTING)) { load ? settings::load() : settings::save(true); if (!load) wifi::applyAPSettings(); }
             else if ((eqlsCMD(1, CLI_SCAN) || eqlsCMD(1, CLI_AP) || eqlsCMD(1, CLI_STATION)) && !load) scan.save(true);
             else parameterError(list->get(1));
         }
