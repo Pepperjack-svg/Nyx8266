@@ -7,7 +7,10 @@
 #include "EEPROMHelper.h" // To load and save settings_t
 #include "debug.h"
 
-#define MAGIC_NUM 3416245
+/* Bump this number whenever the settings_t struct layout changes or
+   you want a firmware upgrade to wipe old EEPROM and apply fresh defaults.
+   Any stored value that doesn't match causes reset() + save(). */
+#define MAGIC_NUM 3416246
 
 extern bool writeFile(String path, String& buf);
 extern void getRandomMac(uint8_t* mac);
@@ -113,8 +116,17 @@ namespace settings {
 
         EEPROMHelper::getObject(SETTINGS_ADDR, newData);
 
-        // calc and check hash
-        if (newData.magic_num == MAGIC_NUM) {
+        /* Validate EEPROM data:
+           - Magic number must match (struct layout unchanged).
+           - Firmware version must match major+minor (new flash = new defaults).
+           If either check fails, wipe EEPROM and load factory defaults.
+           This guarantees that flashing new firmware always applies the latest
+           A_config.h defaults (SSID, password, etc.) rather than keeping stale
+           values from a previous firmware version. */
+        bool versionMatch = (newData.version.major == DEAUTHER_VERSION_MAJOR) &&
+                            (newData.version.minor == DEAUTHER_VERSION_MINOR);
+
+        if ((newData.magic_num == MAGIC_NUM) && versionMatch) {
             data                  = newData;
             data.version.major    = DEAUTHER_VERSION_MAJOR;
             data.version.minor    = DEAUTHER_VERSION_MINOR;
@@ -122,12 +134,7 @@ namespace settings {
             debuglnF("OK");
             save();
         } else {
-            debuglnF("Invalid Hash");
-
-            /*debug(data.magic_num);
-               debugF(" != ");
-               debugln(MAGIC_NUM);*/
-
+            debuglnF("New firmware — resetting settings to defaults");
             reset();
             save();
         }
