@@ -41,7 +41,7 @@ extern Accesspoints accesspoints;
 extern Stations     stations;
 extern Scan     scan;
 extern Attack   attack;
-extern volatile uint32_t currentTime;
+extern uint32_t currentTime;
 
 extern String leftRight(String a, String b, int len);
 extern String center(String a, int len);

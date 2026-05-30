@@ -20,7 +20,7 @@ extern Scan scan;
 
 extern uint8_t  wifi_channel;
 extern uint8_t  broadcast[6];
-extern volatile uint32_t currentTime;
+extern uint32_t currentTime;
 
 extern bool macBroadcast(uint8_t* mac);
 extern void getRandomMac(uint8_t* mac);

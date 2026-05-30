@@ -15,7 +15,7 @@ extern "C" {
 extern Accesspoints accesspoints;
 extern Names    names;
 extern uint8_t  wifi_channel;
-extern volatile uint32_t currentTime;
+extern uint32_t currentTime;
 
 extern String searchVendor(uint8_t* mac);
 extern bool macMulticast(uint8_t* mac);

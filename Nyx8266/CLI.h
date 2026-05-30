@@ -24,7 +24,7 @@ extern Stations     stations;
 extern Scan   scan;
 extern Attack attack;
 extern DisplayUI displayUI;
-extern volatile uint32_t currentTime;
+extern uint32_t currentTime;
 extern uint32_t  autosaveTime;
 
 extern String macToStr(const uint8_t* mac);

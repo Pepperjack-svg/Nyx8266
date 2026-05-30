@@ -15,7 +15,7 @@ extern "C" {
 #define SSID_LIST_SIZE 60
 
 
-extern volatile uint32_t currentTime;
+extern uint32_t currentTime;
 extern Accesspoints accesspoints;
 
 extern void checkFile(String path, String data);
